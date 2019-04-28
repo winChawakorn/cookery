@@ -1,47 +1,49 @@
-import React from 'react';
-import { Platform } from 'react-native';
-import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
+import React from 'react'
+import { Platform } from 'react-native'
+import { createStackNavigator, createBottomTabNavigator } from 'react-navigation'
 
-import TabBarIcon from '../components/TabBarIcon';
-import HomeScreen from '../screens/HomeScreen';
-import LinksScreen from '../screens/LinksScreen';
-import SettingsScreen from '../screens/SettingsScreen';
+import TabBarIcon from '../components/TabBarIcon'
+import ListScreen from '../screens/ListScreen'
+import ExploreScreen from '../screens/ExploreScreen'
+import SettingsScreen from '../screens/SettingsScreen'
+import MenuDetailScreen from '../screens/MenuDetailScreen'
 
-const HomeStack = createStackNavigator({
-  Home: HomeScreen,
-});
+const ListStack = createStackNavigator({
+  List: ListScreen,
+  Detail: MenuDetailScreen,
+})
 
-HomeStack.navigationOptions = {
-  tabBarLabel: 'Home',
+ListStack.navigationOptions = {
+  tabBarLabel: 'Cooking List',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
       name={
         Platform.OS === 'ios'
-          ? `ios-information-circle${focused ? '' : '-outline'}`
-          : 'md-information-circle'
+          ? 'ios-list'
+          : 'md-list'
       }
     />
   ),
-};
+}
 
-const LinksStack = createStackNavigator({
-  Links: LinksScreen,
-});
+const ExploreStack = createStackNavigator({
+  Explore: ExploreScreen,
+})
 
-LinksStack.navigationOptions = {
-  tabBarLabel: 'Links',
+ExploreStack.navigationOptions = {
+  tabBarLabel: 'Explore',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
-      name={Platform.OS === 'ios' ? 'ios-link' : 'md-link'}
+      name={Platform.OS === 'ios' ? 'ios-search' : 'md-search'}
     />
   ),
-};
+}
 
 const SettingsStack = createStackNavigator({
   Settings: SettingsScreen,
-});
+})
 
 SettingsStack.navigationOptions = {
   tabBarLabel: 'Settings',
@@ -51,10 +53,10 @@ SettingsStack.navigationOptions = {
       name={Platform.OS === 'ios' ? 'ios-options' : 'md-options'}
     />
   ),
-};
+}
 
 export default createBottomTabNavigator({
-  HomeStack,
-  LinksStack,
+  ListStack,
+  ExploreStack,
   SettingsStack,
-});
+})
