@@ -1,8 +1,13 @@
 import React from 'react'
-import { Platform, StatusBar, StyleSheet, View } from 'react-native'
+import { StyleSheet, View, KeyboardAvoidingView } from 'react-native'
 import { AppLoading, Asset, Font, Icon } from 'expo'
+import styled from 'styled-components'
 import AppNavigator from './navigation/AppNavigator'
-import LoginScreen from './screens/LoginScreen'
+
+const Container = styled.KeyboardAvoidingView`
+    flex: 1;
+    backgroundColor: #fff;
+`
 
 export default class App extends React.Component {
   state = {
@@ -20,10 +25,9 @@ export default class App extends React.Component {
       )
     } else {
       return (
-        <View style={styles.container}>
-          {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+        <Container enabled behavior="padding">
           <AppNavigator />
-        </View>
+        </Container>
       )
     }
   }
@@ -54,10 +58,3 @@ export default class App extends React.Component {
     this.setState({ isLoadingComplete: true })
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-})
