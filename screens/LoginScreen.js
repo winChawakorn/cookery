@@ -43,7 +43,7 @@ const SubmitButtonLabel = styled.Text`
 const LoginForm = styled.View`
     justifyContent: center;
     alignItems: center;
-    backgroundColor: rgba(0, 0, 0, 0.5);
+    backgroundColor: rgba(0, 0, 0, 0.6);
     paddingTop: 25;
     paddingBottom: 25;
     paddingRight: 20;
@@ -64,7 +64,7 @@ const TabBar = styled.View`
 `
 
 const Tab = styled.View`
-  backgroundColor: rgba(0, 0, 0, 0.5);
+  backgroundColor: rgba(0, 0, 0, 0.6);
   width: 75;
   height: 75;
   borderRadius: 50;
@@ -136,7 +136,7 @@ export default class LoginScreen extends Component {
       backgroundColor: icon === 'danger' ? 'red' : 'green',
       color: 'white',
       icon: icon || 'danger',
-      duration: '4000',
+      duration: '5000',
       onPress: () => hideMessage()
     })
   }
