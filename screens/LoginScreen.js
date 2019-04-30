@@ -7,6 +7,7 @@ import styled from 'styled-components'
 import logo from '../assets/images/logo-white.png'
 import FlashMessage, { showMessage, hideMessage } from "react-native-flash-message"
 import { Bubbles } from 'react-native-loader'
+import firebase from '../firebase'
 
 const Container = styled.ImageBackground`
     flex: 1;
@@ -140,10 +141,14 @@ export default class LoginScreen extends Component {
     })
   }
 
-  handleSignup = () => {
+  handleSignup = async () => {
     const { email, password, confirmPassword } = this.state
     if (!email || !password || !confirmPassword) {
       this.showMessage('Error', `Please complete the form.`, 'danger')
+      return
+    }
+    if (!/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email.toLowerCase())) {
+      this.showMessage('Error', 'Please enter a valid email address.', 'danger')
       return
     }
     if (password.length < 8 || password.length > 20) {
@@ -154,13 +159,36 @@ export default class LoginScreen extends Component {
       this.showMessage('Error', '`Password` and `Confirm Password` do not match.', 'danger')
       return
     }
+    this.setState({ loading: true })
+    try {
+      await firebase.auth().createUserWithEmailAndPassword(email, password)
+    } catch (err) {
+      this.showMessage('Error', err.message, 'danger')
+      this.setState({ loading: false })
+      return
+    }
+    const users = await firebase.database().ref('users').once('value')
+    const id = users.numChildren()
+    await firebase.database().ref('users/' + id).set({ id, email })
     this.showMessage('Sign up Success!', `Welcome ${email}`, 'success')
-    this.setState({ password: '', confirmPassword: '', tab: 'login' })
+    this.setState({ password: '', confirmPassword: '', tab: 'login', loading: false })
   }
 
-  handleLogin = () => {
+  handleLogin = async () => {
+    const { email, password } = this.state
+    if (!email || !password) {
+      this.showMessage('Error', `Please complete the form.`, 'danger')
+      return
+    }
     this.setState({ loading: true })
-    // this.props.navigation.navigate('Main')
+    try {
+      await firebase.auth().signInWithEmailAndPassword(email, password)
+    } catch (err) {
+      this.showMessage('Login failed', err.message, 'danger')
+      this.setState({ loading: false })
+      return
+    }
+    this.props.navigation.navigate('Main')
   }
 
   render() {
