@@ -1,5 +1,4 @@
 import React from 'react'
-import { StyleSheet, View, KeyboardAvoidingView } from 'react-native'
 import { AppLoading, Asset, Font, Icon } from 'expo'
 import styled from 'styled-components'
 import AppNavigator from './navigation/AppNavigator'

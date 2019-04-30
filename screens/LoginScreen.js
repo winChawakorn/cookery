@@ -5,6 +5,8 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import bg from '../assets/images/login-background.jpg'
 import styled from 'styled-components'
 import logo from '../assets/images/logo-white.png'
+import FlashMessage, { showMessage, hideMessage } from "react-native-flash-message"
+import { Bubbles } from 'react-native-loader'
 
 const Container = styled.ImageBackground`
     flex: 1;
@@ -51,6 +53,7 @@ const LoginForm = styled.View`
 const Logo = styled.Image`
     resizeMode: contain;
     height: 200;
+    marginBottom: 10;
 `
 
 const TabBar = styled.View`
@@ -69,7 +72,7 @@ const Tab = styled.View`
 const TabLabelBar = styled.View`
     width: 230;
     flexDirection: row;
-    marginBottom: 10;
+    marginBottom: 3;
 `
 
 const TabButton = styled.TouchableHighlight`
@@ -82,15 +85,25 @@ const TabButtonLabel = styled.Text`
 
 export default class LoginScreen extends Component {
   state = {
-    tab: 'login'
+    tab: 'login',
+    loading: false,
+    email: '',
+    password: '',
+    confirmPassword: '',
   }
 
   componentDidMount() {
     StatusBar.setBarStyle('light-content')
   }
 
-  getInput = (placeholder, icon, secureTextEntry) => (
+  handleChange = (name, value) => {
+    this.setState({ [name]: value })
+  }
+
+  getInput = (name, placeholder, icon, secureTextEntry) => (
     <Input
+      value={this.state[name]}
+      onChangeText={value => this.handleChange(name, value)}
       inputContainerStyle={{
         width: 300,
         borderColor: 'white',
@@ -115,16 +128,43 @@ export default class LoginScreen extends Component {
     />
   )
 
-  handleSubmit = () => {
-    if (this.state.tab === 'login') {
-      this.props.navigation.navigate('Main')
-    } else {
+  showMessage = (title, message, icon) => {
+    showMessage({
+      message: title,
+      description: message,
+      backgroundColor: icon === 'danger' ? 'red' : 'green',
+      color: 'white',
+      icon: icon || 'danger',
+      duration: '4000',
+      onPress: () => hideMessage()
+    })
+  }
 
+  handleSignup = () => {
+    const { email, password, confirmPassword } = this.state
+    if (!email || !password || !confirmPassword) {
+      this.showMessage('Error', `Please complete the form.`, 'danger')
+      return
     }
+    if (password.length < 8 || password.length > 20) {
+      this.showMessage('Error', '`Password` must be 8 - 20 characters.', 'danger')
+      return
+    }
+    if (password !== confirmPassword) {
+      this.showMessage('Error', '`Password` and `Confirm Password` do not match.', 'danger')
+      return
+    }
+    this.showMessage('Sign up Success!', `Welcome ${email}`, 'success')
+    this.setState({ password: '', confirmPassword: '', tab: 'login' })
+  }
+
+  handleLogin = () => {
+    this.setState({ loading: true })
+    // this.props.navigation.navigate('Main')
   }
 
   render() {
-    const { tab } = this.state
+    const { tab, loading } = this.state
     const alignRight = {
       flexDirection: 'row',
       justifyContent: 'flex-end',
@@ -132,6 +172,7 @@ export default class LoginScreen extends Component {
     return (
       <Container source={bg}>
         <ContainerFilter>
+          <FlashMessage position="top" />
           <Logo source={logo} />
           <TabLabelBar>
             <TabButton underlayColor='transparent' onPress={() => this.setState({ tab: 'login' })} >
@@ -145,11 +186,11 @@ export default class LoginScreen extends Component {
             <Tab />
           </TabBar>
           <LoginForm>
-            {this.getInput('Email', 'envelope')}
-            {this.getInput('Password', 'lock', true)}
-            {tab === 'signup' ? this.getInput('Confirm Password', 'lock', true) : null}
-            <SubmitButton onPress={() => this.handleSubmit()}>
-              <SubmitButtonLabel>{tab === 'login' ? 'Login' : 'Sign up'}</SubmitButtonLabel>
+            {this.getInput('email', 'Email', 'envelope')}
+            {this.getInput('password', 'Password', 'lock', true)}
+            {tab === 'signup' ? this.getInput('confirmPassword', 'Confirm Password', 'lock', true) : null}
+            <SubmitButton disabled={loading} onPress={() => tab === 'login' ? this.handleLogin() : this.handleSignup()}>
+              <SubmitButtonLabel>{loading ? <Bubbles size={12} color="white" /> : tab === 'login' ? 'Login' : 'Sign up'}</SubmitButtonLabel>
             </SubmitButton>
           </LoginForm>
         </ContainerFilter>
