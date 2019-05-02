@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
-import { StatusBar } from 'react-native'
+import { StatusBar, View } from 'react-native'
 import { Input } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/FontAwesome'
-import bg from '../assets/images/login-background.jpg'
+import bg from '../assets/images/joanna-boj-17158-unsplash.jpg'
 import styled from 'styled-components'
 import logo from '../assets/images/logo-white.png'
 import FlashMessage, { showMessage, hideMessage } from "react-native-flash-message"
@@ -19,7 +19,7 @@ const ContainerFilter = styled.View`
     alignItems: center;
     height: 100%;
     width: 100%;
-    backgroundColor: rgba(0, 0, 0, 0.4);
+    backgroundColor: rgba(0, 0, 0, 0.5);
 `
 
 const SubmitButton = styled.TouchableHighlight`
@@ -43,7 +43,7 @@ const SubmitButtonLabel = styled.Text`
 const LoginForm = styled.View`
     justifyContent: center;
     alignItems: center;
-    backgroundColor: rgba(0, 0, 0, 0.6);
+    backgroundColor: rgba(0, 0, 0, 0.9);
     paddingTop: 25;
     paddingBottom: 25;
     paddingRight: 20;
@@ -64,7 +64,7 @@ const TabBar = styled.View`
 `
 
 const Tab = styled.View`
-  backgroundColor: rgba(0, 0, 0, 0.6);
+  backgroundColor: rgba(0, 0, 0, 0.9);
   width: 75;
   height: 75;
   borderRadius: 50;
@@ -91,14 +91,23 @@ export default class LoginScreen extends Component {
     email: '',
     password: '',
     confirmPassword: '',
+    landing: true,
   }
 
-  componentDidMount() {
+  componentDidMount = async () => {
+    const { navigation } = this.props
+    await new Promise(resolve => setTimeout(resolve, 2000))
+    firebase.auth().onAuthStateChanged(user => {
+      if (user)
+        return navigation.navigate('Main')
+      navigation.navigate('Login')
+    })
+    this.setState({ landing: false })
     StatusBar.setBarStyle('light-content')
   }
 
   handleChange = (name, value) => {
-    this.setState({ [name]: value })
+    this.setState({ [name]: value.toLowerCase() })
   }
 
   getInput = (name, placeholder, icon, secureTextEntry) => (
@@ -167,9 +176,7 @@ export default class LoginScreen extends Component {
       this.setState({ loading: false })
       return
     }
-    const users = await firebase.database().ref('users').once('value')
-    const id = users.numChildren()
-    await firebase.database().ref('users/' + id).set({ id, email })
+    await firebase.database().ref('users').push({ email })
     this.showMessage('Sign up Success!', `Welcome ${email}`, 'success')
     this.setState({ password: '', confirmPassword: '', tab: 'login', loading: false })
   }
@@ -188,11 +195,10 @@ export default class LoginScreen extends Component {
       this.setState({ loading: false })
       return
     }
-    this.props.navigation.navigate('Main')
   }
 
   render() {
-    const { tab, loading } = this.state
+    const { tab, loading, landing } = this.state
     const alignRight = {
       flexDirection: 'row',
       justifyContent: 'flex-end',
@@ -201,26 +207,32 @@ export default class LoginScreen extends Component {
       <Container source={bg}>
         <ContainerFilter>
           <FlashMessage position="top" />
-          <Logo source={logo} />
-          <TabLabelBar>
-            <TabButton underlayColor='transparent' onPress={() => this.setState({ tab: 'login' })} >
-              <TabButtonLabel style={{ color: tab === 'login' ? 'white' : '#bababa' }}>Login</TabButtonLabel>
-            </TabButton>
-            <TabButton underlayColor='transparent' onPress={() => this.setState({ tab: 'signup' })} style={{ ...alignRight, marginLeft: 15 }}>
-              <TabButtonLabel style={{ color: tab === 'signup' ? 'white' : '#bababa' }}>Sign up</TabButtonLabel>
-            </TabButton>
-          </TabLabelBar>
-          <TabBar style={(tab === 'signup' ? alignRight : {})}>
-            <Tab />
-          </TabBar>
-          <LoginForm>
-            {this.getInput('email', 'Email', 'envelope')}
-            {this.getInput('password', 'Password', 'lock', true)}
-            {tab === 'signup' ? this.getInput('confirmPassword', 'Confirm Password', 'lock', true) : null}
-            <SubmitButton disabled={loading} onPress={() => tab === 'login' ? this.handleLogin() : this.handleSignup()}>
-              <SubmitButtonLabel>{loading ? <Bubbles size={12} color="white" /> : tab === 'login' ? 'Login' : 'Sign up'}</SubmitButtonLabel>
-            </SubmitButton>
-          </LoginForm>
+          <Logo source={logo} style={{ height: landing ? `30%` : 200 }} />
+          {!landing ?
+            <TabLabelBar>
+              <TabButton underlayColor='transparent' onPress={() => this.setState({ tab: 'login' })} >
+                <TabButtonLabel style={{ color: tab === 'login' ? 'white' : '#bababa' }}>Login</TabButtonLabel>
+              </TabButton>
+              <TabButton underlayColor='transparent' onPress={() => this.setState({ tab: 'signup' })} style={{ ...alignRight, marginLeft: 15 }}>
+                <TabButtonLabel style={{ color: tab === 'signup' ? 'white' : '#bababa' }}>Sign up</TabButtonLabel>
+              </TabButton>
+            </TabLabelBar>
+            : null}
+          {!landing ?
+            <TabBar style={(tab === 'signup' ? alignRight : {})}>
+              <Tab />
+            </TabBar>
+            : null}
+          {!landing ?
+            <LoginForm>
+              {this.getInput('email', 'Email', 'envelope')}
+              {this.getInput('password', 'Password', 'lock', true)}
+              {tab === 'signup' ? this.getInput('confirmPassword', 'Confirm Password', 'lock', true) : null}
+              <SubmitButton disabled={loading} onPress={() => tab === 'login' ? this.handleLogin() : this.handleSignup()}>
+                <SubmitButtonLabel style={{ marginTop: loading ? 5 : 0 }}>{loading ? <Bubbles size={10} color="white" /> : tab === 'login' ? 'Login' : 'Sign up'}</SubmitButtonLabel>
+              </SubmitButton>
+            </LoginForm>
+            : null}
         </ContainerFilter>
       </Container>
     )

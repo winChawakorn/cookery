@@ -5,11 +5,17 @@ import {
   Text,
   View,
   Button,
+  StatusBar
 } from 'react-native'
+// import firebase from '../firebase'
 
 export default class ListScreen extends React.Component {
   static navigationOptions = {
     header: null,
+  }
+
+  componentDidMount() {
+    StatusBar.setBarStyle('default')
   }
 
   render() {
