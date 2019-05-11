@@ -41,8 +41,8 @@ const Logo = styled.Image`
 
 const DetailContainer = styled.View`
   shadowColor: black;
-  shadowRadius: 20;
-  shadowOpacity: 0.8;
+  shadowRadius: 100;
+  shadowOpacity: 1;
   paddingTop: 10;
   paddingBottom: 40;
   paddingLeft: 50;
@@ -65,7 +65,7 @@ const Title = styled.Text`
 
 export default class MenuDetailScreen extends React.Component {
   static navigationOptions = ({ navigation }) => ({
-    title: navigation.state.params.name,
+    title: navigation.state.params.strMeal,
   })
 
   state = {
@@ -73,12 +73,7 @@ export default class MenuDetailScreen extends React.Component {
   }
 
   componentDidMount() {
-    fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${this.props.navigation.state.params.id}`)
-      .then(res => res.json())
-      .then(res => this.setState({ ...res.meals[0], loading: false }))
-      .catch(error =>
-        this.showMessage('Error', error, 'danger')
-      )
+    this.setState({ ...this.props.navigation.state.params, loading: false })
   }
 
   showMessage = (title, message, icon) => {
@@ -102,19 +97,19 @@ export default class MenuDetailScreen extends React.Component {
     })
     const detail = (
       <DetailContainer key={1}>
-        <Name>{data.strMeal}</Name>
-        <Title>Country</Title>
-        <Divider />
-        <Detail>{data.strArea}</Detail>
-        <Title>Category</Title>
-        <Divider />
-        <Detail>{data.strTags.split(',').join(', ')}</Detail>
+        <Name>{data.strMeal || ''}</Name>
+        {data.strArea ? [<Title key={0}>Country</Title>,
+        <Divider key={1} />,
+        <Detail key={2}>{data.strArea}</Detail>] : ''}
+        {data.strTags || data.strCategory ? [<Title key={0}>Category</Title>,
+        <Divider key={1} />,
+        <Detail key={2}>{data.strTags ? data.strTags.split(',').join(', ') : data.strCategory}</Detail>] : ''}
         <Title>Ingredients</Title>
         <Divider />
         <Detail style={{ marginLeft: 0 }}>{ingredients.map(ingredient => `${ingredients.indexOf(ingredient) + 1}.) ${ingredient}\n`)}</Detail>
-        <Title>Instructions</Title>
-        <Divider />
-        <Detail>{data.strInstructions}</Detail>
+        {data.strInstructions ? [<Title key={0}>Instructions</Title>,
+        <Divider key={1} />,
+        <Detail key={2}>{data.strInstructions}</Detail>] : ''}
         {data.strYoutube ?
           <WebView
             style={{ height: 300, marginTop: 20 }}
@@ -122,9 +117,9 @@ export default class MenuDetailScreen extends React.Component {
             source={{ uri: `https://www.youtube.com/embed/${data.strYoutube.split('?v=')[1]}?rel=0&autoplay=0&showinfo=0&controls=0` }}
           />
           : ''}
-        <Title>Source</Title>
-        <Divider />
-        <Detail style={{ color: 'blue' }}>{data.strSource}</Detail>
+        {data.strSource ? [<Title key={0}>Source</Title>,
+        <Divider key={1} />,
+        <Detail key={2} style={{ color: 'blue' }}>{data.strSource}</Detail>] : ''}
       </DetailContainer>
     )
     const image = <Image key={0} source={{ uri: data.strMealThumb }} />
@@ -132,7 +127,6 @@ export default class MenuDetailScreen extends React.Component {
   }
 
   render() {
-    console.log(this.state)
     return (
       <ScrollView>
         <FlashMessage position="top" />
