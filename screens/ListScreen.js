@@ -9,18 +9,6 @@ import { Divider, ListItem, List } from 'react-native-elements'
 import styled from 'styled-components'
 import { Bubbles } from 'react-native-loader'
 
-const Title = styled.Text`
-  margin: auto;
-  fontSize: 20;
-  paddingTop: 20;
-  paddingBottom: 20;
-`
-
-const Container = styled.View`
-  flex: 1;
-  backgroundColor: #fff;
-`
-
 const ScrollView = styled.ScrollView`
   flex: 1;
   backgroundColor: #fff;
@@ -28,7 +16,7 @@ const ScrollView = styled.ScrollView`
 
 export default class ListScreen extends React.Component {
   static navigationOptions = {
-    header: null,
+    title: 'Cooking list',
   }
 
   state = {
@@ -38,12 +26,6 @@ export default class ListScreen extends React.Component {
 
   componentDidMount() {
     StatusBar.setBarStyle('default')
-    // fetch('https://www.themealdb.com/api/json/v1/1/random.php')
-    //   .then(res => res.json())
-    //   .then(res => this.setState({ data: [...this.state.data, ...res.meals], loading: false }))
-    //   .catch(error =>
-    //     console.log('err', error)
-    //   )
     this.setState({
       data: [...this.state.data, {
         "dateModified": null,
@@ -103,33 +85,29 @@ export default class ListScreen extends React.Component {
 
   render() {
     return (
-      <Container>
-        <ScrollView contentContainerStyle={{ paddingTop: 30 }}>
-          <Title>Cooking List</Title>
-          <Divider />
-          {this.state.loading ? <Bubbles size={10} color="black" />
-            : <FlatList
-              data={this.state.data}
-              renderItem={
-                ({ item }) => (
-                  <ListItem
-                    title={item.strMeal}
-                    subtitle={Object.keys(item).reduce((prev, cur) => { console.log(prev); return cur.includes('strIngredient') && item[cur] ? `${prev ? prev + ', ' : ''} ${item[cur]}` : prev }, '')}
-                    leftAvatar={{
-                      rounded: false,
-                      style: { height: 80, width: 80 },
-                      source: { uri: item.strMealThumb }
-                    }}
-                    containerStyle={{ borderWidth: 0.5 }}
-                    onPress={() => this.props.navigation.navigate('Detail')}
-                    chevron
-                  />
-                )}
-              keyExtractor={item => item.strMeal}
-            />
-          }
-        </ScrollView>
-      </Container>
+      <ScrollView>
+        {this.state.loading ? <Bubbles size={10} color="black" />
+          : <FlatList
+            data={this.state.data}
+            renderItem={
+              ({ item }) => (
+                <ListItem
+                  title={item.strMeal}
+                  subtitle={Object.keys(item).reduce((prev, cur) => cur.includes('strIngredient') && item[cur] ? `${prev ? prev + ', ' : ''} ${item[cur]}` : prev, '')}
+                  leftAvatar={{
+                    rounded: false,
+                    style: { height: 80, width: 80 },
+                    source: { uri: item.strMealThumb }
+                  }}
+                  containerStyle={{ borderWidth: 0.5 }}
+                  onPress={() => this.props.navigation.navigate('Detail', { id: item.idMeal, name: item.strMeal })}
+                  chevron
+                />
+              )}
+            keyExtractor={item => item.strMeal}
+          />
+        }
+      </ScrollView>
     )
   }
 }
