@@ -5,6 +5,7 @@ import MainTabNavigator from './MainTabNavigator'
 import LoginScreen from '../screens/LoginScreen'
 
 export default createAppContainer(createSwitchNavigator({
+  Main: MainTabNavigator,
   Login: createStackNavigator({
     Login: {
       screen: LoginScreen,
@@ -13,5 +14,4 @@ export default createAppContainer(createSwitchNavigator({
       },
     }
   }),
-  Main: MainTabNavigator,
 }))
