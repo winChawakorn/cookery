@@ -218,7 +218,8 @@ export default class ExploreScreen extends React.Component {
   }
 
   clearSelected = () => {
-    this.setState({ selectedIngredients: [] })
+    this.setState({ selectedIngredients: [], searchterm: '' })
+    this.handleSearchtermChange()
   }
 
   handleSearchtermChange = () => {

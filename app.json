@@ -10,9 +10,9 @@
     ],
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/logo.png",
+    "icon": "./assets/images/icon.png",
     "splash": {
-      "image": "./assets/images/splash.png",
+      "image": "./assets/images/joanna-boj-17158-unsplash.jpg",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },

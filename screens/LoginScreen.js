@@ -182,7 +182,7 @@ export default class LoginScreen extends Component {
     }
     await firebase.database().ref('users').push({ email })
     this.showMessage('Sign up Success!', `Welcome ${email}`, 'success')
-    this.setState({ password: '', confirmPassword: '', tab: 'login', loading: false })
+    // this.setState({ password: '', confirmPassword: '', tab: 'login', loading: false })
   }
 
   handleLogin = async () => {
