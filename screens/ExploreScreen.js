@@ -3,7 +3,10 @@ import styled from 'styled-components'
 import firebase from '../firebase'
 import { View, Text } from 'react-native'
 import { Bars } from 'react-native-loader'
-import Swiper from 'react-native-swiper'
+import { Pages } from 'react-native-pages'
+import Dimensions from 'Dimensions'
+
+const { height } = Dimensions.get('window')
 
 const ScrollView = styled.ScrollView`
     flex: 1;
@@ -40,7 +43,6 @@ const Hr = styled.View`
 
 const Ingredient = styled.TouchableOpacity`
   margin: auto;
-  ${'' /* opacity: 0.3; */}
 `
 
 const IngredientContainer = styled.View`
@@ -52,8 +54,8 @@ const IngredientContainer = styled.View`
 `
 
 const IngredientImage = styled.Image`
-  height: 80;
-  width: 80;
+  height: ${height / 11};
+  width: ${height / 11};
   margin: auto;
   marginTop: 20;
 `
@@ -72,6 +74,7 @@ export default class ExploreScreen extends React.Component {
     loadingIngredients: true,
     ingredients: [],
     selectedIngredients: [],
+    index: 0,
   }
 
   componentDidMount = () => {
@@ -85,57 +88,34 @@ export default class ExploreScreen extends React.Component {
     })
   }
 
-  selected = []
-  pages = []
-  emptyPages = []
-
   getIngredientList = () => {
-    if (this.pages.length > 0)
-      return (
-        <Swiper
-          height="auto"
-          onIndexChanged={index => {
-            if (!this.emptyPages[index])
-              this.emptyPages[index] = this.pages[index]
-            if (index + 1 < this.pages.length && !this.emptyPages[index + 1])
-              this.emptyPages[index + 1] = this.pages[index + 1]
-          }}
-        >
-          {this.emptyPages}
-        </Swiper>
-      )
-    console.log('here')
     const { ingredients, selectedIngredients } = this.state
+    console.log('sssss', selectedIngredients)
     if (!ingredients) return null
     let i = 0
+    const pages = []
     let ingredientViews = []
     while (true) {
       const ingredient = ingredients[i]
-      // const isSelected = selectedIngredients.find(ingredient2 => ingredient2.strIngredient === ingredient.strIngredient)
+      const isSelected = selectedIngredients.find(ingredient2 => ingredient2.strIngredient === ingredient.strIngredient)
       ingredientViews.push(
         <Ingredient
           key={i}
           onPress={() => {
-            // const _selectedIngredients = selectedIngredients
-            // if (isSelected) {
-            //   const index = selectedIngredients.indexOf(isSelected)
-            //   console.log('removing', index)
-            //   console.log('before', _selectedIngredients)
-            //   _selectedIngredients.splice(index, 1)
-            //   console.log('after', _selectedIngredients)
-            // }
-            // else
-            //   _selectedIngredients.push(ingredient)
-            // this.setState({ selectedIngredients: _selectedIngredients })
-            this.setState({ selectedIngredients: [...selectedIngredients, ingredient] })
-            // this.selected = [...this.selected, ingredient]
-            // console.log(this.selected)
+            const _selectedIngredients = selectedIngredients
+            if (isSelected) {
+              const index = selectedIngredients.indexOf(isSelected)
+              _selectedIngredients.splice(index, 1)
+            }
+            else
+              _selectedIngredients.push(ingredient)
+            this.setState({ selectedIngredients: _selectedIngredients })
           }}
         >
           <IngredientImage source={{ uri: ingredient.image.replace('.png', '-Small.png') }} />
           <IngredientLabel>{ingredient.strIngredient}</IngredientLabel>
-          {this.selected.find(ingredient2 => ingredient2.strIngredient === ingredient.strIngredient) ?
-            <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center' }}>
+          {isSelected ?
+            <View style={{ flex: 1, backgroundColor: 'rgba(255, 255, 255, 0.7)', position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center' }}>
               <Text style={{ fontWeight: 'bold' }}>SELECTED</Text>
             </View>
             : null
@@ -144,29 +124,29 @@ export default class ExploreScreen extends React.Component {
       )
       i++
       if (i % 20 === 0) {
-        this.pages.push(<IngredientContainer key={i}>{ingredientViews}</IngredientContainer>)
+        pages.push(<IngredientContainer key={i}>{ingredientViews}</IngredientContainer>)
         ingredientViews = []
       }
       if (i >= ingredients.length) {
-        this.pages.push(<IngredientContainer key={i}>{ingredientViews}</IngredientContainer>)
+        pages.push(<IngredientContainer key={i}>{ingredientViews}</IngredientContainer>)
         break;
       }
     }
-    this.emptyPages = this.pages.map(() => null)
-    this.emptyPages[0] = this.pages[0]
+    const emptyPages = pages.map(() => null)
+    emptyPages[0] = pages[0]
     return (
-      <Swiper
-        height="auto"
-        onIndexChanged={index => {
-          if (!this.emptyPages[index])
-            this.emptyPages[index] = this.pages[index]
-          if (index + 1 < this.pages.length && !this.emptyPages[index + 1])
-            this.emptyPages[index + 1] = this.pages[index + 1]
+      <Pages
+        containerStyle={{ height }}
+        onScrollEnd={index => {
+          if (!emptyPages[index])
+            emptyPages[index] = pages[index]
+          if (index + 1 < pages.length && !emptyPages[index + 1])
+            emptyPages[index + 1] = pages[index + 1]
         }}
+        indicatorColor="black"
       >
-        {this.emptyPages}
-        {/* {this.pages} */}
-      </Swiper>
+        {pages}
+      </Pages>
     )
   }
 
@@ -184,11 +164,6 @@ export default class ExploreScreen extends React.Component {
               this.getIngredientList()
             )
           }
-          {/* <Pages containerStyle={{ flex: 1 }}>
-                <View style={{ height: 100, backgroundColor: 'red' }} />
-                <View style={{ height: 100, backgroundColor: 'green' }} />
-                <View style={{ flex: 1, backgroundColor: 'blue' }} />
-              </Pages> */}
         </Container>
       </ScrollView>
     )
