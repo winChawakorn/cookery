@@ -76,19 +76,10 @@ export default class MenuDetailScreen extends React.Component {
     const { params } = this.props.navigation.state
     if (params.country || params.ingredients) {
       firebase.database().ref('meals').once('value', snapshots => {
-        const meals = Object.values(snapshots.val()).filter(meal => {
-          const checkCountry = meal.strArea === params.country || params.country === 'All'
-          if (params.ingredients.length <= 0 || !checkCountry)
-            return checkCountry
-          let checkIngredients = false
-          for (let value of Object.values(meal)) {
-            if (params.ingredients.includes(value.toLowerCase())) {
-              checkIngredients = true
-              break
-            }
-          }
-          return checkCountry && checkIngredients
-        })
+        let meals = Object.values(snapshots.val()).filter(meal => params.country === 'All' || params.country === meal.strArea)
+        for (let ingredient of params.ingredients) {
+          meals = meals.filter(meal => { if (Object.values(meal).reduce((prev, cur) => prev + cur, '').toLowerCase().includes(ingredient)) { console.log(meal); return true }; return false })
+        }
         if (meals) {
           meals.sort(() => Math.random() - 0.5)
           this.setState({ ...meals[0], meals, loading: false })
@@ -171,11 +162,11 @@ export default class MenuDetailScreen extends React.Component {
       snapshots.forEach(snapshot => {
         const user = snapshot.val()
         if (user.email === firebase.auth().currentUser.email) {
-          if (user.list.includes(meals[index].idMeal)) {
+          if (user.list && user.list.includes(meals[index].idMeal)) {
             this.showMessage('Cannot repeat', `${meals[index].strMeal} is already in your list.`, 'danger')
             return
           }
-          snapshot.ref.set({ ...user, list: [...user.list, meals[index].idMeal] })
+          snapshot.ref.set({ ...user, list: [...(user.list || []), meals[index].idMeal] })
           this.showMessage('Success', `${meals[index].strMeal} was added to your list.`, 'success')
         }
       })

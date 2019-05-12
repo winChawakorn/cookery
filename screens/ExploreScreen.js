@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import firebase from '../firebase'
-import { View, Text, Picker } from 'react-native'
+import { View, Text, Picker, StatusBar } from 'react-native'
 import { Bars } from 'react-native-loader'
 import { Pages } from 'react-native-pages'
 import { Input } from 'react-native-elements'
@@ -110,6 +110,7 @@ export default class ExploreScreen extends React.Component {
   }
 
   componentDidMount = () => {
+    StatusBar.setBarStyle('default')
     firebase.database().ref('ingredients').once('value', snapshots => {
       const ingredients = Object.values(snapshots.val())
       this.setState({
@@ -242,7 +243,7 @@ export default class ExploreScreen extends React.Component {
             <Hr key={1} />]
             : null}
           {selectedIngredients.map(ingredient => (
-            <IngredientLabel style={{ fontSize: 18 }} key={ingredient.strIngredient}>{selectedIngredients.indexOf(ingredient) + 1}.) {ingredient.strIngredient}</IngredientLabel>
+            <IngredientLabel style={{ fontSize: 18, marginTop: 5, marginBottom: 5 }} key={ingredient.strIngredient}>{selectedIngredients.indexOf(ingredient) + 1}.) {ingredient.strIngredient}</IngredientLabel>
           ))}
           <SectionTitle>Country</SectionTitle>
           <Hr />
