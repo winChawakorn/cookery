@@ -83,7 +83,7 @@ const SearchButton = styled.TouchableHighlight`
 const ExploreButton = styled.TouchableHighlight`
   width: 80%;
   margin: auto;
-  backgroundColor: red;
+  backgroundColor: #3a85ff;
   paddingTop: 10;
   paddingBottom: 10;
   paddingLeft: 10;
@@ -217,6 +217,10 @@ export default class ExploreScreen extends React.Component {
     ])
   }
 
+  clearSelected = () => {
+    this.setState({ selectedIngredients: [] })
+  }
+
   handleSearchtermChange = () => {
     const { ingredients, searchterm } = this.state
     const filteredIngredients = ingredients.filter(ingredient => ingredient.strIngredient.toLowerCase().includes(searchterm.toLowerCase()))
@@ -241,6 +245,11 @@ export default class ExploreScreen extends React.Component {
           {selectedIngredients.length > 0 ?
             [<SectionTitle key={0}>Selected Ingredients</SectionTitle>,
             <Hr key={1} />]
+            : null}
+          {selectedIngredients.length > 0 ?
+            <ExploreButton style={{ backgroundColor: 'red', width: '50%' }} onPress={() => this.clearSelected()}>
+              <Text style={{ color: 'white', fontSize: 20 }}>Clear ingredients</Text>
+            </ExploreButton>
             : null}
           {selectedIngredients.map(ingredient => (
             <IngredientLabel style={{ fontSize: 18, marginTop: 5, marginBottom: 5 }} key={ingredient.strIngredient}>{selectedIngredients.indexOf(ingredient) + 1}.) {ingredient.strIngredient}</IngredientLabel>
