@@ -78,7 +78,7 @@ export default class MenuDetailScreen extends React.Component {
       firebase.database().ref('meals').once('value', snapshots => {
         let meals = Object.values(snapshots.val()).filter(meal => params.country === 'All' || params.country === meal.strArea)
         for (let ingredient of params.ingredients) {
-          meals = meals.filter(meal => { if (Object.values(meal).reduce((prev, cur) => prev + cur, '').toLowerCase().includes(ingredient)) { console.log(meal); return true }; return false })
+          meals = meals.filter(meal => (Object.values(meal).reduce((prev, cur) => prev + cur, '').toLowerCase().includes(ingredient)))
         }
         if (meals) {
           meals.sort(() => Math.random() - 0.5)
