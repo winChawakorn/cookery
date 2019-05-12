@@ -5,9 +5,13 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import bg from '../assets/images/joanna-boj-17158-unsplash.jpg'
 import styled from 'styled-components'
 import logo from '../assets/images/logo-white.png'
-import FlashMessage, { showMessage, hideMessage } from "react-native-flash-message"
+import { showMessage, hideMessage } from "react-native-flash-message"
 import { Bubbles } from 'react-native-loader'
 import firebase from '../firebase'
+
+const KeyboardAvoidingView = styled.KeyboardAvoidingView`
+  flex: 1;
+`
 
 const Container = styled.ImageBackground`
     flex: 1;
@@ -204,37 +208,39 @@ export default class LoginScreen extends Component {
       justifyContent: 'flex-end',
     }
     return (
-      <Container source={bg}>
-        <ContainerFilter>
-          <FlashMessage position="top" />
-          <Logo source={logo} style={{ height: landing ? `30%` : 200 }} />
-          {!landing ?
-            <TabLabelBar>
-              <TabButton underlayColor='transparent' onPress={() => this.setState({ tab: 'login' })} >
-                <TabButtonLabel style={{ color: tab === 'login' ? 'white' : '#bababa' }}>Login</TabButtonLabel>
-              </TabButton>
-              <TabButton underlayColor='transparent' onPress={() => this.setState({ tab: 'signup' })} style={{ ...alignRight, marginLeft: 15 }}>
-                <TabButtonLabel style={{ color: tab === 'signup' ? 'white' : '#bababa' }}>Sign up</TabButtonLabel>
-              </TabButton>
-            </TabLabelBar>
-            : null}
-          {!landing ?
-            <TabBar style={(tab === 'signup' ? alignRight : {})}>
-              <Tab />
-            </TabBar>
-            : null}
-          {!landing ?
-            <LoginForm>
-              {this.getInput('email', 'Email', 'envelope')}
-              {this.getInput('password', 'Password', 'lock', true)}
-              {tab === 'signup' ? this.getInput('confirmPassword', 'Confirm Password', 'lock', true) : null}
-              <SubmitButton disabled={loading} onPress={() => tab === 'login' ? this.handleLogin() : this.handleSignup()}>
-                <SubmitButtonLabel style={{ marginTop: loading ? 5 : 0 }}>{loading ? <Bubbles size={10} color="white" /> : tab === 'login' ? 'Login' : 'Sign up'}</SubmitButtonLabel>
-              </SubmitButton>
-            </LoginForm>
-            : null}
-        </ContainerFilter>
-      </Container>
+      <KeyboardAvoidingView enabled behavior="padding">
+        <Container source={bg}>
+          <ContainerFilter>
+            {/* <FlashMessage position="top" /> */}
+            <Logo source={logo} style={{ height: landing ? `30%` : 200 }} />
+            {!landing ?
+              <TabLabelBar>
+                <TabButton underlayColor='transparent' onPress={() => this.setState({ tab: 'login' })} >
+                  <TabButtonLabel style={{ color: tab === 'login' ? 'white' : '#bababa' }}>Login</TabButtonLabel>
+                </TabButton>
+                <TabButton underlayColor='transparent' onPress={() => this.setState({ tab: 'signup' })} style={{ ...alignRight, marginLeft: 15 }}>
+                  <TabButtonLabel style={{ color: tab === 'signup' ? 'white' : '#bababa' }}>Sign up</TabButtonLabel>
+                </TabButton>
+              </TabLabelBar>
+              : null}
+            {!landing ?
+              <TabBar style={(tab === 'signup' ? alignRight : {})}>
+                <Tab />
+              </TabBar>
+              : null}
+            {!landing ?
+              <LoginForm>
+                {this.getInput('email', 'Email', 'envelope')}
+                {this.getInput('password', 'Password', 'lock', true)}
+                {tab === 'signup' ? this.getInput('confirmPassword', 'Confirm Password', 'lock', true) : null}
+                <SubmitButton disabled={loading} onPress={() => tab === 'login' ? this.handleLogin() : this.handleSignup()}>
+                  <SubmitButtonLabel style={{ marginTop: loading ? 5 : 0 }}>{loading ? <Bubbles size={10} color="white" /> : tab === 'login' ? 'Login' : 'Sign up'}</SubmitButtonLabel>
+                </SubmitButton>
+              </LoginForm>
+              : null}
+          </ContainerFilter>
+        </Container>
+      </KeyboardAvoidingView>
     )
   }
 }

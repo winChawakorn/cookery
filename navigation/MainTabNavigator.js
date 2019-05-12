@@ -29,6 +29,7 @@ ListStack.navigationOptions = {
 
 const ExploreStack = createStackNavigator({
   Explore: ExploreScreen,
+  Detail: MenuDetailScreen,
 })
 
 ExploreStack.navigationOptions = {

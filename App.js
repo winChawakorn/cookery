@@ -2,8 +2,9 @@ import React from 'react'
 import { AppLoading, Asset, Font, Icon } from 'expo'
 import styled from 'styled-components'
 import AppNavigator from './navigation/AppNavigator'
+import FlashMessage from "react-native-flash-message"
 
-const Container = styled.KeyboardAvoidingView`
+const Container = styled.View`
     flex: 1;
     backgroundColor: #fff;
 `
@@ -24,8 +25,9 @@ export default class App extends React.Component {
       )
     } else {
       return (
-        <Container enabled behavior="padding">
+        <Container>
           <AppNavigator />
+          <FlashMessage position="top" />
         </Container>
       )
     }
