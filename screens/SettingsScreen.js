@@ -45,6 +45,7 @@ export default class SettingsScreen extends React.Component {
 
   handleLogout = () => {
     firebase.auth().signOut()
+    // this.navigation.navigate('Login')
   }
 
   render() {

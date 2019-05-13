@@ -19,7 +19,6 @@ const ScrollView = styled.ScrollView`
 const Title = styled.Text`
   margin: auto;
   fontSize: 25;
-  fontFamily: 'Verdana';
 `
 
 const Container = styled.View`

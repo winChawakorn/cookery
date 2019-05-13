@@ -103,8 +103,9 @@ export default class LoginScreen extends Component {
     await new Promise(resolve => setTimeout(resolve, 2000))
     firebase.auth().onAuthStateChanged(user => {
       if (user)
-        return navigation.navigate('Main')
-      navigation.navigate('Login')
+        navigation.navigate('Main')
+      else
+        navigation.navigate('Login')
     })
     this.setState({ landing: false })
     StatusBar.setBarStyle('light-content')
@@ -149,7 +150,7 @@ export default class LoginScreen extends Component {
       backgroundColor: icon === 'danger' ? 'red' : 'green',
       color: 'white',
       icon: icon || 'danger',
-      duration: '5000',
+      duration: 5000,
       onPress: () => hideMessage()
     })
   }
@@ -182,7 +183,7 @@ export default class LoginScreen extends Component {
     }
     await firebase.database().ref('users').push({ email })
     this.showMessage('Sign up Success!', `Welcome ${email}`, 'success')
-    // this.setState({ password: '', confirmPassword: '', tab: 'login', loading: false })
+    this.setState({ password: '', confirmPassword: '', tab: 'login', loading: false })
   }
 
   handleLogin = async () => {
@@ -194,6 +195,7 @@ export default class LoginScreen extends Component {
     this.setState({ loading: true })
     try {
       await firebase.auth().signInWithEmailAndPassword(email, password)
+      // this.navigation.navigate('Main')
     } catch (err) {
       this.showMessage('Login failed', err.message, 'danger')
       this.setState({ loading: false })
@@ -234,7 +236,7 @@ export default class LoginScreen extends Component {
                 {this.getInput('password', 'Password', 'lock', true)}
                 {tab === 'signup' ? this.getInput('confirmPassword', 'Confirm Password', 'lock', true) : null}
                 <SubmitButton disabled={loading} onPress={() => tab === 'login' ? this.handleLogin() : this.handleSignup()}>
-                  <SubmitButtonLabel style={{ marginTop: loading ? 5 : 0 }}>{loading ? <Bubbles size={10} color="white" /> : tab === 'login' ? 'Login' : 'Sign up'}</SubmitButtonLabel>
+                  {loading ? <Bubbles size={10} color="white" /> : <SubmitButtonLabel style={{ marginTop: loading ? 5 : 0 }}>{tab === 'login' ? 'Login' : 'Sign up'}</SubmitButtonLabel>}
                 </SubmitButton>
               </LoginForm>
               : null}

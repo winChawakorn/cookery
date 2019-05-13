@@ -99,7 +99,7 @@ export default class MenuDetailScreen extends React.Component {
       backgroundColor: icon === 'danger' ? 'red' : 'green',
       color: 'white',
       icon: icon || 'danger',
-      duration: '5000',
+      duration: 5000,
       onPress: () => hideMessage()
     })
   }
